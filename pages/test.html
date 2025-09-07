@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代理IP获取与检测工具</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-button {
+            padding: 15px 20px;
+            background: #f1f1f1;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+            transition: background 0.3s;
+        }
+        
+        .tab-button:hover {
+            background: #ddd;
+        }
+        
+        .tab-button.active {
+            background: white;
+            border-bottom: 2px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            padding: 20px;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            height: 150px;
+            font-family: monospace;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .test-button {
+            background: var(--success);
+        }
+        
+        .test-button:hover {
+            background: #27ae60;
+        }
+        
+        .result-item {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .proxy-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .proxy-address {
+            font-weight: bold;
+        }
+        
+        .proxy-status {
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .status-success {
+            background: var(--success);
+        }
+        
+        .status-warning {
+            background: var(--warning);
+        }
+        
+        .status-danger {
+            background: var(--danger);
+        }
+        
+        .proxy-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .detail-item {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #777;
+        }
+        
+        .detail-value {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .progress-container {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .source-list {
+            list-style: none;
+        }
+        
+        .source-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .source-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .source-list a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .source-list a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--light);
+            color: #777;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>代理IP获取与检测工具</h1>
+            <p>发现、测试和管理代理IP资源</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('tab1')">代理检测</button>
+            <button class="tab-button" onclick="openTab('tab2')">免费资源</button>
+            <button class="tab-button" onclick="openTab('tab3')">付费服务</button>
+            <button class="tab-button" onclick="openTab('tab4')">自建代理</button>
+        </div>
+        
+        <div id="tab1" class="tab-content active">
+            <h2>代理IP检测</h2>
+            <div class="form-group">
+                <label for="proxyList">代理列表 (每行一个，格式: ip:port 或 user:pass@ip:port)</label>
+                <textarea id="proxyList" placeholder="例如:
+121.41.99.161:80
+user:password@45.45.45.45:3128
+78.78.78.78:80"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="testUrl">测试URL</label>
+                <input type="text" id="testUrl" value="http://httpbin.org/ip">
+            </div>
+            
+            <div class="form-group">
+                <label for="timeout">超时时间 (毫秒)</label>
+                <input type="number" id="timeout" value="5000">
+            </div>
+            
+            <button id="testButton" class="test-button">开始测试代理</button>
+            
+            <div class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            
+            <div id="resultsContainer">
+                <h3>测试结果</h3>
+                <div id="resultsList"></div>
+            </div>
+        </div>
+        
+        <div id="tab2" class="tab-content">
+            <h2>免费代理IP资源</h2>
+            <p>以下是一些提供免费代理IP的网站：</p>
+            <ul class="source-list">
+                <li><a href="https://www.free-proxy-list.net/" target="_blank">Free Proxy List</a> - 提供HTTP和HTTPS代理</li>
+                <li><a href="https://www.sslproxies.org/" target="_blank">SSL Proxies</a> - 专注于HTTPS代理</li>
+                <li><a href="https://free-proxy-list.com/" target="_blank">Free Proxy List.com</a> - 多种类型代理</li>
+                <li><a href="https://www.us-proxy.org/" target="_blank">US Proxy</a> - 美国代理服务器</li>
+                <li><a href="https://www.socks-proxy.net/" target="_blank">SOCKS Proxy List</a> - SOCKS代理</li>
+            </ul>
+            
+            <div class="form-group">
+                <button id="fetchFreeButton" class="test-button">获取免费代理IP示例</button>
+            </div>
+            
+            <div id="freeProxyResults">
+                <h3>获取结果</h3>
+                <div id="freeProxyList"></div>
+            </div>
+        </div>
+        
+        <div id="tab3" class="tab-content">
+            <h2>付费代理服务</h2>
+            <p>付费代理服务通常提供更高质量、更稳定的代理IP：</p>
+            <ul class="source-list">
+                <li><a href="https://brightdata.com/" target="_blank">Bright Data</a> - 全球最大的代理网络</li>
+                <li><a href="https://oxylabs.io/" target="_blank">Oxylabs</a> - 高级代理解决方案</li>
+                <li><a href="https://smartproxy.com/" target="_blank">Smartproxy</a> - 性价比高的代理服务</li>
+                <li><a href="https://www.geosurf.com/" target="_blank">GeoSurf</a> - 住宅代理网络</li>
+                <li><a href="https://luminati.io/" target="_blank">Luminati</a> - 高质量的住宅代理</li>
+            </ul>
+            
+            <div class="form-group">
+                <label>付费服务特点：</label>
+                <ul>
+                    <li>更高的稳定性和可用性</li>
+                    <li>更快的速度</li>
+                    <li>更好的地理位置覆盖</li>
+                    <li>专业技术支持</li>
+                    <li>更高级的匿名性</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="tab4" class="tab-content">
+            <h2>自建代理服务器</h2>
+            <p>搭建自己的代理服务器可以获得完全控制权和最高安全性：</p>
+            
+            <div class="form-group">
+                <label>常用VPS提供商：</label>
+                <ul class="source-list">
+                    <li><a href="https://aws.amazon.com/" target="_blank">Amazon Web Services (AWS)</a></li>
+                    <li><a href="https://cloud.google.com/" target="_blank">Google Cloud Platform</a></li>
+                    <li><a href="https://azure.microsoft.com/" target="_blank">Microsoft Azure</a></li>
+                    <li><a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a></li>
+                    <li><a href="https://www.linode.com/" target="_blank">Linode</a></li>
+                </ul>
+            </div>
+            
+            <div class="form-group">
+                <label>代理服务器软件：</label>
+                <ul>
+                    <li><strong>Squid</strong> - 最流行的HTTP代理服务器</li>
+                    <li><strong>HAProxy</strong> - 高性能TCP/HTTP负载均衡器</li>
+                    <li><strong>TinyProxy</strong> - 轻量级HTTP/HTTPS代理</li>
+                    <li><strong>Shadowsocks</strong> - 安全的socks5代理</li>
+                </ul>
+            </div>
+            
+            <div class="form-group">
+                <label>基本Squid安装步骤：</label>
+                <textarea readonly rows="6">
+# Ubuntu/Debian
+sudo apt update
+sudo apt install squid
+
+# 配置Squid
+sudo nano /etc/squid/squid.conf
+
+# 重启服务
+sudo systemctl restart squid
+                </textarea>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>注意：使用代理IP时请遵守相关法律法规和服务条款</p>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabId) {
+            // 隐藏所有标签内容
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // 取消所有标签按钮的激活状态
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            // 显示选中的标签内容并激活按钮
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const testButton = document.getElementById('testButton');
+            const proxyList = document.getElementById('proxyList');
+            const testUrl = document.getElementById('testUrl');
+            const timeout = document.getElementById('timeout');
+            const resultsList = document.getElementById('resultsList');
+            const progressBar = document.getElementById('progressBar');
+            const fetchFreeButton = document.getElementById('fetchFreeButton');
+            const freeProxyList = document.getElementById('freeProxyList');
+            
+            testButton.addEventListener('click', startTesting);
+            fetchFreeButton.addEventListener('click', fetchFreeProxies);
+            
+            async function startTesting() {
+                const proxies = proxyList.value.trim().split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+                
+                if (proxies.length === 0) {
+                    alert('请输入至少一个代理');
+                    return;
+                }
+                
+                resultsList.innerHTML = '';
+                testButton.disabled = true;
+                testButton.textContent = '测试中...';
+                
+                let completed = 0;
+                progressBar.style.width = '0%';
+                
+                for (let i = 0; i < proxies.length; i++) {
+                    const proxy = proxies[i];
+                    const resultElement = document.createElement('div');
+                    resultElement.className = 'result-item';
+                    resultElement.innerHTML = `
+                        <div class="proxy-info">
+                            <span class="proxy-address">${proxy}</span>
+                            <span class="proxy-status status-warning">测试中...</span>
+                        </div>
+                        <div class="proxy-details">
+                            <div class="detail-item">
+                                <div class="detail-label">响应时间</div>
+                                <div class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">地理位置</div>
+                                <div class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">匿名级别</div>
+                                <div class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">状态码</div>
+                                <div class="detail-value">-</div>
+                            </div>
+                        </div>
+                    `;
+                    resultsList.appendChild(resultElement);
+                    
+                    try {
+                        // 模拟代理测试
+                        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+                        
+                        // 随机生成测试结果（实际应用中应真实测试）
+                        const success = Math.random() > 0.3;
+                        const responseTime = Math.floor(Math.random() * 2000);
+                        
+                        const statusElement = resultElement.querySelector('.proxy-status');
+                        const responseTimeElement = resultElement.querySelector('.proxy-details .detail-item:nth-child(1) .detail-value');
+                        const locationElement = resultElement.querySelector('.proxy-details .detail-item:nth-child(2) .detail-value');
+                        const anonymityElement = resultElement.querySelector('.proxy-details .detail-item:nth-child(3) .detail-value');
+                        const statusCodeElement = resultElement.querySelector('.proxy-details .detail-item:nth-child(4) .detail-value');
+                        
+                        if (success) {
+                            statusElement.textContent = '可用';
+                            statusElement.className = 'proxy-status status-success';
+                            responseTimeElement.textContent = `${responseTime}ms`;
+                            
+                            // 模拟地理位置
+                            const locations = ['美国', '中国', '德国', '日本', '英国', '巴西', '俄罗斯'];
+                            locationElement.textContent = locations[Math.floor(Math.random() * locations.length)];
+                            
+                            // 模拟匿名级别
+                            const anonymityLevels = ['透明', '匿名', '高匿'];
+                            anonymityElement.textContent = anonymityLevels[Math.floor(Math.random() * anonymityLevels.length)];
+                            
+                            statusCodeElement.textContent = '200';
+                        } else {
+                            statusElement.textContent = '不可用';
+                            statusElement.className = 'proxy-status status-danger';
+                            responseTimeElement.textContent = '-';
+                            locationElement.textContent = '-';
+                            anonymityElement.textContent = '-';
+                            statusCodeElement.textContent = '超时';
+                        }
+                    } catch (error) {
+                        console.error('测试代理时出错:', error);
+                    }
+                    
+                    completed++;
+                    progressBar.style.width = `${(completed / proxies.length) * 100}%`;
+                }
+                
+                testButton.disabled = false;
+                testButton.textContent = '开始测试代理';
+            }
+            
+            function fetchFreeProxies() {
+                freeProxyList.innerHTML = '<div class="result-item"><div class="proxy-info"><span class="proxy-address">获取中...</span><span class="proxy-status status-warning">请求中</span></div></div>';
+                
+                // 模拟从免费网站获取代理
+                setTimeout(() => {
+                    freeProxyList.innerHTML = '';
+                    
+                    // 模拟获取到的代理列表
+                    const sampleProxies = [
+                        '181.129.50.22:5678',
+                        '45.173.6.114:999',
+                        '190.64.132.145:999',
+                        '45.184.155.85:999',
+                        '186.125.223.15:999',
+                        '45.184.155.3:999',
+                        '45.184.155.10:999',
+                        '190.97.256.12:999'
+                    ];
+                    
+                    sampleProxies.forEach(proxy => {
+                        const proxyElement = document.createElement('div');
+                        proxyElement.className = 'result-item';
+                        proxyElement.innerHTML = `
+                            <div class="proxy-info">
+                                <span class="proxy-address">${proxy}</span>
+                                <span class="proxy-status status-success">已获取</span>
+                            </div>
+                        `;
+                        freeProxyList.appendChild(proxyElement);
+                    });
+                    
+                    // 将获取的代理添加到测试标签
+                    proxyList.value = sampleProxies.join('\n');
+                    
+                    // 切换到测试标签
+                    openTab('tab1');
+                    document.querySelector('[onclick="openTab(\'tab1\')"]').classList.add('active');
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
