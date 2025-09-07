@@ -1,7 +1,9 @@
 const axios = require('./axios');
 const api = require('./api');
+const fetchLike = require('./api/fetchlike');
+
+
 //const { HttpProxyAgent } = require('http-proxy-agent');
-// const fetch = require('node-fetch');
 let count = 0;
 const { HttpProxyAgent } = require('http-proxy-agent');
 
@@ -50,6 +52,18 @@ async function mainLoop() {
     }
 }
 
-mainLoop();
+// mainLoop();
+
+function loopFetchLike() {
+    const delay = Math.floor(Math.random() * 1000) + 2000; // 2000-3000ms
+    setTimeout(() => {
+        count++;
+        console.log(`第${count}次点赞`);
+        fetchLike();
+        loopFetchLike();
+    }, delay);
+}
+
+loopFetchLike();
 
 
