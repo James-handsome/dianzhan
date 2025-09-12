@@ -6,8 +6,7 @@ function getIp() {
         method: 'GET',
     })
 }
-
-function sendlikes(ip, httpAgent) {
+function sendlikes(httpAgent) {
     const url = "http://6p24und1.sso72848.ji88pu21.kjojdkjk.fgf666.top/wechat/freevote.json";
     const headers = {
         "accept": "*/*",

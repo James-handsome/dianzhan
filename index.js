@@ -1,14 +1,9 @@
-const axios = require('./axios');
 const api = require('./api');
-const fetchLike = require('./api/fetchlike');
-
-
-//const { HttpProxyAgent } = require('http-proxy-agent');
+const { SocksProxyAgent } = require('socks-proxy-agent');
 let count = 0;
-const { HttpProxyAgent } = require('http-proxy-agent');
 
 let ipList = [];
-
+//获取代理ip
 async function getIp() {
     let res = await api.getIp();
     if (res) {
@@ -19,19 +14,19 @@ async function getIp() {
         ipList = [];
     }
 }
-
+//使用代理ip点赞
 function like(ip) {
-    const httpAgent = new HttpProxyAgent(ip);
+    const agent = new SocksProxyAgent(ip);
     count++;
     console.log(`第${count}次点赞，使用IP: ${ip}`);
 
-    api.sendlikes(ip,httpAgent).then((res) => {
+    api.sendlikes(agent).then((res) => {
         console.log('点赞成功:', res.data);
     }).catch(err => {
         console.error('点赞失败:', err.message);
     });
 }
-
+//主循环
 async function mainLoop() {
     while (true) {
         await getIp();
@@ -52,18 +47,6 @@ async function mainLoop() {
     }
 }
 
-// mainLoop();
-
-function loopFetchLike() {
-    const delay = Math.floor(Math.random() * 1000) + 2000; // 2000-3000ms
-    setTimeout(() => {
-        count++;
-        console.log(`第${count}次点赞`);
-        fetchLike();
-        loopFetchLike();
-    }, delay);
-}
-
-loopFetchLike();
+mainLoop();
 
 
