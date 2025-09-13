@@ -1,5 +1,4 @@
 const api = require('./api');
-const { SocksProxyAgent } = require('socks-proxy-agent');
 let count = 0;
 
 let ipList = [];
@@ -7,20 +6,16 @@ let ipList = [];
 async function getIp() {
     let res = await api.getIp();
     if (res) {
-        ipList = res.list;
-        console.log('获取到IP列表:', ipList);
-    } else {
-        console.log('获取IP失败，使用默认IP');
-        ipList = [];
+        console.error('获得新IP--------------------------------------------------------------------------------------------------->')
+        ipList = res.map(item => `http://${item.proxy}`);
     }
 }
+
 //使用代理ip点赞
 function like(ip) {
-    const agent = new SocksProxyAgent(ip);
     count++;
     console.log(`第${count}次点赞，使用IP: ${ip}`);
-
-    api.sendlikes(agent).then((res) => {
+    api.sendlikes(ip).then((res) => {
         console.log('点赞成功:', res.data);
     }).catch(err => {
         console.error('点赞失败:', err.message);
