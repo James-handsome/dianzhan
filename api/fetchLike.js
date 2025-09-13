@@ -1,6 +1,5 @@
 const axios = require('../axios');
 
-
 async function fetchLike() {
     axios.post(
         "http://updo651y.o15y2p64.w93b3fw6.eewsh.vpn777.top/wechat/freevote.json",
@@ -21,7 +20,10 @@ async function fetchLike() {
             console.log('点赞失败了😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭',res.msg);
         }else if(res.code===1){
             console.log('点赞成功👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍',res);
+        }else{
+            console.log(res,'res');
         }
+        
     }).catch(err => {
         console.error('网络请求失败了===================================》', err.message);
     });

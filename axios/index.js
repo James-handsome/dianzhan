@@ -1,10 +1,13 @@
 const axios = require('axios');
 
+//const { SocksProxyAgent } = require('socks-proxy-agent');
+//const agent = new SocksProxyAgent('socks5://127.0.0.1:1800');
+
 const instance = axios.create({
     // httpAgent: agent,
     // httpsAgent: agent,
     //baseURL: 'https://api.example.com', // 根据实际情况修改
-    timeout: 20000,
+    timeout: 10000,
     //proxy: false,
     headers: {
         'Content-Type': 'application/json'

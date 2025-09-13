@@ -1,7 +1,7 @@
 const axios = require('../axios');
 const { HttpProxyAgent } = require('http-proxy-agent');
 //const { HttpsProxyAgent } = require('https-proxy-agent');
-
+  
 function getIp() {
   return axios({
     method: 'get',
@@ -23,7 +23,6 @@ function getIp() {
     }
   });
 }
-
 
 async function sendlikes(ip) {
   const agent = new HttpProxyAgent(ip);
