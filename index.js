@@ -9,6 +9,7 @@ async function getIp() {
         console.error('获得新IP--------------------------------------------------------------------------------------------------->')
         ipList = res.map(item => `http://${item.proxy}`);
     }
+    console.log(ipList);
 }
 
 //使用代理ip点赞
@@ -16,7 +17,7 @@ function like(ip) {
     count++;
     console.log(`第${count}次点赞，使用IP: ${ip}`);
     api.sendlikes(ip).then((res) => {
-        console.log('点赞成功:', res.data);
+        console.log('点赞成功:👍👍👍👍👍👍👍👍👍👍👍', res);
     }).catch(err => {
         console.error('点赞失败:', err.message);
     });
