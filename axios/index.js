@@ -4,7 +4,7 @@ const instance = axios.create({
     // httpAgent: agent,
     // httpsAgent: agent,
     //baseURL: 'https://api.example.com', // 根据实际情况修改
-    timeout: 10000,
+    timeout: 20000,
     //proxy: false,
     headers: {
         'Content-Type': 'application/json'

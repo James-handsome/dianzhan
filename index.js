@@ -1,4 +1,5 @@
 const api = require('./api');
+const fetchLike = require('./api/fetchLike');
 let count = 0;
 
 let ipList = [];
@@ -12,7 +13,7 @@ async function getIp() {
     console.log(ipList);
 }
 
-//使用代理ip点赞
+//使用代理ip点赞 
 function like(ip) {
     count++;
     console.log(`第${count}次点赞，使用IP: ${ip}`);
@@ -43,6 +44,16 @@ async function mainLoop() {
     }
 }
 
-mainLoop();
 
+let timeoutId = null;
 
+function scheduleFetch() {
+  const delay = Math.floor(Math.random() * 1000) + 1000; // 1000-2000ms
+  timeoutId = setTimeout(() => {
+    fetchLike();
+    scheduleFetch();
+  }, delay);
+}
+
+// 启动
+scheduleFetch();
